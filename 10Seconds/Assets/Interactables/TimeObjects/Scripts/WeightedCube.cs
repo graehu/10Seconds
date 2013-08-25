@@ -4,22 +4,19 @@ using System.Collections;
 public class WeightedCube : TimedObject
 {
 	
-	
 	private Transform target;
+	private Vector3 orignalPosition;
 	
-	public override void Reset()
+	protected override void Reset()
 	{
-		
-	}
+		transform.position = orignalPosition;
+		target = null;
+	}	
 	
-	public override void Interact(CharacterController player)
+	public override void Interact(Transform interactor)
 	{
-		target = player.transform;
-	}
-	
-	public override void Disturbed()
-	{
-		
+		target = interactor;
+		TimeDisturbance();
 	}
 	
 	private void Follow()
@@ -39,15 +36,12 @@ public class WeightedCube : TimedObject
 			hispos.z = Mathf.Round(hispos.z);
 			
 			Vector3 dist = hispos - mypos;
-			
 
-			
 			if(!(hispos.x == mypos.x || hispos.z == mypos.z))
 			{
 				target = null;
 				return;
 			}//*/
-			
 			//TODO: Make sure it doesn't go through things.
 	
 			//move x pos
@@ -59,22 +53,40 @@ public class WeightedCube : TimedObject
 			//move y pos
 			if(dist.z > 1)
 				mypos.z += dist.z-1;
-			else if (dist.z < -1) 
+			else if (dist.z < -1)
 				mypos.z += dist.z+1;
-			transform.position = mypos;
-
+			
+			
+			if(!(transform.position == mypos))
+			{
+				transform.position = mypos;
+				RaycastHit hit = new RaycastHit();
+				Ray davies = new Ray(transform.position, Vector3.down);
+				Physics.Raycast(davies, out hit, 1f);
+				
+				if(hit.transform != null)
+				{
+					Trigger trigger = hit.transform.GetComponent<Trigger>();
+					if(trigger != null)
+					{
+						trigger.Interact(transform);
+					}
+				}
+				
+			}
 		}
 	}
 	
 	// Use this for initialization
 	void Start ()
 	{
-	
+		orignalPosition = transform.position;
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
+		base.Update();
 		Follow();
 	}
 }

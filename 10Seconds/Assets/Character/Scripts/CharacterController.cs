@@ -52,7 +52,6 @@ public class CharacterController : MonoBehaviour {
 		rounding.x = Mathf.Round(rounding.x);
 		rounding.y = Mathf.Round(rounding.y);
 		rounding.z = Mathf.Round(rounding.z);
-		
 		if(state == CharacterStates.Walking)
 		{
 			if(Input.GetKeyDown(KeyCode.Space))
@@ -74,6 +73,10 @@ public class CharacterController : MonoBehaviour {
 			if(Input.GetKeyDown(KeyCode.D))
 			{
 				Move(dir.right);
+			}
+			if(Input.GetKeyDown(KeyCode.R))
+			{
+				Application.LoadLevel(Application.loadedLevel);
 			}
 		}
 		else if(state == CharacterStates.Interacting)
@@ -97,7 +100,7 @@ public class CharacterController : MonoBehaviour {
 		
 		if(item != null)
 		{
-			item.Interact(this);
+			item.Interact(transform);
 			return true;
 		}
 		return false;		
