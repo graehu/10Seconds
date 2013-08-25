@@ -12,9 +12,14 @@ public abstract class Trigger : Interactable {
 			return fireVal;
 		}
 	}
-	
 	private bool fired = false;
 	public override void  Interact(Transform interactor) {fired = true;}
+	public override void  StopInteraction(Transform interactor) {}
+	
+	protected void Fire()
+	{
+		fired = true;
+	}
 	//public void Disturbed() {}
 	
 	/*// Use this for initialization

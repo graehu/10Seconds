@@ -56,6 +56,14 @@ public class CharacterController : MonoBehaviour {
 		{
 			if(Input.GetKeyDown(KeyCode.Space))
 			{
+				if(item != null)
+				{
+					if(item.IsInteracting)
+					{
+						item.StopInteraction(transform);
+					}
+				}//*/
+				
 				TryInteract();
 			}
 			if(Input.GetKeyDown(KeyCode.W))
@@ -92,6 +100,7 @@ public class CharacterController : MonoBehaviour {
 	{
 		RaycastHit hit = new RaycastHit();
 		Ray charles = new Ray(transform.position, transform.forward);
+		
 		Physics.Raycast(charles, out hit, 1f);
 		if(hit.transform != null)
 			item = hit.transform.GetComponent<Interactable>();

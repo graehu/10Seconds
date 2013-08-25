@@ -30,6 +30,7 @@ public class Door : TimedObject
 		IsClosed = !resetValue;
 	}
 	public override void Interact(Transform player){}
+	public override void StopInteraction(Transform player){}
 	#endregion
 	// Use this for initialization
 	void Start () 
@@ -64,10 +65,11 @@ public class Door : TimedObject
 			TryClose();
 		}
 	}
+	
 	void TryClose()
 	{
 		Ray johnson = new Ray(transform.position, Vector3.down);
-		if(!Physics.Raycast(johnson))
+		if(!Physics.Raycast(johnson, 1f))
 		{
 			isOpen = false;
 			isClosing = false;

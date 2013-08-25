@@ -3,28 +3,34 @@ using System.Collections;
 
 public class WeightedCube : TimedObject
 {
-	
-	private Transform target;
 	private Vector3 orignalPosition;
 	
 	protected override void Reset()
 	{
 		transform.position = orignalPosition;
-		target = null;
+		interactor = null;
 	}	
 	
-	public override void Interact(Transform interactor)
+	public override void Interact(Transform _interactor)
 	{
-		target = interactor;
+		interactor = _interactor;
 		TimeDisturbance();
+	}
+	
+	public override void StopInteraction(Transform _interactor)
+	{
+		if(interactor == _interactor)
+		{
+			interactor = null;
+		}
 	}
 	
 	private void Follow()
 	{
-		if(target != null)
+		if(interactor != null)
 		{
 			Vector3 mypos = transform.position;
-			Vector3 hispos = target.position;
+			Vector3 hispos = interactor.position;
 			Vector3 rounding = transform.position;
 			
 			mypos.x = Mathf.Round(mypos.x);
@@ -33,13 +39,13 @@ public class WeightedCube : TimedObject
 			
 			hispos.x = Mathf.Round(hispos.x);
 			hispos.y = Mathf.Round(hispos.y);
-			hispos.z = Mathf.Round(hispos.z);
+			hispos.z = Mathf.Round(hispos.z);//*/
 			
 			Vector3 dist = hispos - mypos;
 
 			if(!(hispos.x == mypos.x || hispos.z == mypos.z))
 			{
-				target = null;
+				interactor = null;
 				return;
 			}//*/
 			//TODO: Make sure it doesn't go through things.
@@ -87,6 +93,9 @@ public class WeightedCube : TimedObject
 	void Update ()
 	{
 		base.Update();
-		Follow();
+	}
+	void LateUpdate()
+	{
+		Follow ();
 	}
 }
