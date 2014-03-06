@@ -4,46 +4,54 @@ using System.Collections.Generic;
 
 public class Door : TimedObject
 {
-	//Control the objects actual movements here too.
+	//Control the objects states here.
 	#region public properties
 	public bool IsClosed
 	{
-		get {return isOpen;}
+		get {return !isOpen;}
 		set {isClosing = value;}
 	}
 	#endregion
 	
 	#region public members
 	public float changeTime;
+	public bool open = false;
 	public List<Trigger> triggers;
 	#endregion
 	
 	#region private members
 	private bool isOpen = false;
 	private bool isClosing = false;
-	private bool resetValue = false;
+	private Animator animator = null;
 	#endregion
 	
 	#region public methods
 	protected override void Reset()
 	{
-		IsClosed = !resetValue;
+		IsClosed = !open;
+		if(open)
+			TryOpen();
+		
 	}
 	public override void Interact(Transform player){}
 	public override void StopInteraction(Transform player){}
 	#endregion
-	// Use this for initialization
+	
+	#region private methods
 	void Start () 
 	{
-		resetValue = isOpen;
+		animator = GetComponentInChildren<Animator>();
+		if(open)
+			TryOpen();
+		
 	}
 	
-	// Update is called once per frame
 	void Update ()
 	{
 		//reset after
 		base.Update();
 		//
+		animator.SetBool("Closed", isOpen);
 		
 		for(int i = 0; i < triggers.Count; i++)
 		{
@@ -54,9 +62,7 @@ public class Door : TimedObject
 				TimeDisturbance();
 				if(isOpen)
 				{
-					Vector3 pos = transform.position;
-					pos.y = 2;
-					transform.position = pos;
+					collider.enabled = false;
 				}
 			}
 		}
@@ -68,14 +74,22 @@ public class Door : TimedObject
 	
 	void TryClose()
 	{
-		Ray johnson = new Ray(transform.position, Vector3.down);
+		Vector3 origin = transform.position;
+		origin.y++;
+		Ray johnson = new Ray(origin, Vector3.down);
 		if(!Physics.Raycast(johnson, 1f))
 		{
 			isOpen = false;
 			isClosing = false;
-			Vector3 pos = transform.position;
-			pos.y = 1;
-			transform.position = pos;
+			collider.enabled = true;
 		}
 	}
+	void TryOpen()
+	{
+		isOpen = true;
+		isClosing = false;
+		IsClosed = false;
+		collider.enabled = false;
+	}
+	#endregion
 }

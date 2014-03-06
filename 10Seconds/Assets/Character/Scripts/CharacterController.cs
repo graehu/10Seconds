@@ -4,15 +4,17 @@ using System.Collections;
 public class CharacterController : MonoBehaviour {
 	
 	#region public members
-	
 	public dir faceDir;
 	public CharacterStates state;
-	
 	#endregion
 	
-	#region private types
+	#region private members
 	private Ray williams;
+	private Transform grabbedObject;
+	private Interactable item;
+	#endregion
 	
+	#region public types
 	public enum dir
 	{
 		up,
@@ -26,12 +28,10 @@ public class CharacterController : MonoBehaviour {
 		Walking,
 		Interacting
 	}
-	private Transform grabbedObject;
-	private Interactable item;
-	
 	#endregion
 	
-	void OnDrawGizmos()
+	#region private methods
+	private void OnDrawGizmos()
 	{
 		if(Input.GetKey(KeyCode.Space))
 		{
@@ -40,13 +40,13 @@ public class CharacterController : MonoBehaviour {
 	}
 	
 	// Use this for initialization
-	void Start ()
+	private void Start ()
 	{
 	
 	}
 	
 	// Update is called once per frame
-	void Update ()
+	private void Update ()
 	{
 		Vector3 rounding = transform.position;
 		rounding.x = Mathf.Round(rounding.x);
@@ -143,4 +143,5 @@ public class CharacterController : MonoBehaviour {
 		}
 
 	}
+	#endregion
 }
