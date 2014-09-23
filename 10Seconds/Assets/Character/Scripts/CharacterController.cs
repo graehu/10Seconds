@@ -2,18 +2,20 @@ using UnityEngine;
 using System.Collections;
 
 public class CharacterController : MonoBehaviour {
-	
+
 	#region public members
 	public dir faceDir;
 	public CharacterStates state;
+	public float walkInterval = 0.5f;
 	#endregion
-	
+
 	#region private members
 	private Ray williams;
 	private Transform grabbedObject;
 	private Interactable item;
+	private float walkTimer = 0.0f;
 	#endregion
-	
+
 	#region public types
 	public enum dir
 	{
@@ -29,7 +31,7 @@ public class CharacterController : MonoBehaviour {
 		Interacting
 	}
 	#endregion
-	
+
 	#region private methods
 	private void OnDrawGizmos()
 	{
@@ -38,16 +40,17 @@ public class CharacterController : MonoBehaviour {
 			Gizmos.DrawRay(transform.position, transform.forward*10);
 		}
 	}
-	
+
 	// Use this for initialization
 	private void Start ()
 	{
-	
+
 	}
-	
+
 	// Update is called once per frame
 	private void Update ()
 	{
+		walkTimer += Time.deltaTime;
 		Vector3 rounding = transform.position;
 		rounding.x = Mathf.Round(rounding.x);
 		rounding.y = Mathf.Round(rounding.y);
@@ -63,29 +66,72 @@ public class CharacterController : MonoBehaviour {
 						item.StopInteraction(transform);
 					}
 				}//*/
-				
+
 				TryInteract();
 			}
 			if(Input.GetKeyDown(KeyCode.W))
 			{
+				faceDir = dir.up;
+				if(walkTimer > walkInterval)
+				{
+					Move(dir.up);
+					walkTimer = 0;
+				}
+			}
+			else if(Input.GetKey(KeyCode.W) && walkTimer > walkInterval)
+			{
 				Move(dir.up);
+				walkTimer = 0;
 			}
 			if(Input.GetKeyDown(KeyCode.A))
 			{
+				faceDir = dir.left;
+				if(walkTimer > walkInterval)
+				{
+					Move(dir.left);
+					walkTimer = 0;
+				}
+			}
+			else if(Input.GetKey(KeyCode.A) && walkTimer > walkInterval)
+			{
 				Move(dir.left);
+				walkTimer = 0;
 			}
 			if(Input.GetKeyDown(KeyCode.S))
 			{
-				Move(dir.down);
+				faceDir = dir.down;
+				if(walkTimer > walkInterval)
+				{
+					Move(dir.down);
+					walkTimer = 0;
+				}
+			}
+			else if(Input.GetKey(KeyCode.S) && walkTimer > walkInterval)
+			{
+					Move(dir.down);
+					walkTimer = 0;
 			}
 			if(Input.GetKeyDown(KeyCode.D))
 			{
-				Move(dir.right);
+				faceDir = dir.right;
+				if(walkTimer > walkInterval)
+				{
+					Move(dir.right);
+					walkTimer = 0;
+				}
 			}
+			else if(Input.GetKey(KeyCode.D) && walkTimer > walkInterval)
+			{
+				Move(dir.right);
+				walkTimer = 0;
+			}
+
 			if(Input.GetKeyDown(KeyCode.R))
 			{
 				Application.LoadLevel(Application.loadedLevel);
 			}
+
+
 		}
 		else if(state == CharacterStates.Interacting)
 		{
@@ -95,24 +141,24 @@ public class CharacterController : MonoBehaviour {
 			}
 		}
 	}
-	
+
 	private bool TryInteract()
 	{
 		RaycastHit hit = new RaycastHit();
 		Ray charles = new Ray(transform.position, transform.forward);
-		
+
 		Physics.Raycast(charles, out hit, 1f);
 		if(hit.transform != null)
 			item = hit.transform.GetComponent<Interactable>();
 		else
 			item = null;
-		
+
 		if(item != null)
 		{
 			item.Interact(transform);
 			return true;
 		}
-		return false;		
+		return false;
 	}
 	private void Move(dir movedir)
 	{
@@ -132,9 +178,9 @@ public class CharacterController : MonoBehaviour {
 			transform.forward = -Vector3.forward;
 			break;
 		}
-		
+
 		Ray williams = new Ray(transform.position, transform.forward);
-		
+
 		if(!Physics.Raycast(williams, 1f))
 		{
 			Vector3 movePos = transform.position;

@@ -12,47 +12,47 @@ public class Door : TimedObject
 		set {isClosing = value;}
 	}
 	#endregion
-	
+
 	#region public members
 	public float changeTime;
 	public bool open = false;
 	public List<Trigger> triggers;
 	#endregion
-	
+
 	#region private members
 	private bool isOpen = false;
 	private bool isClosing = false;
-	private Animator animator = null;
+	private GameObject cube = null;
 	#endregion
-	
+
 	#region public methods
 	protected override void Reset()
 	{
 		IsClosed = !open;
 		if(open)
 			TryOpen();
-		
+
 	}
 	public override void Interact(Transform player){}
 	public override void StopInteraction(Transform player){}
 	#endregion
-	
+
 	#region private methods
-	void Start () 
+	void Start ()
 	{
-		animator = GetComponentInChildren<Animator>();
+		cube = transform.Find("Cube").gameObject;
+		Debug.Log(cube.name);
 		if(open)
 			TryOpen();
-		
+
 	}
-	
+
 	void Update ()
 	{
 		//reset after
 		base.Update();
 		//
-		animator.SetBool("Closed", isOpen);
-		
+
 		for(int i = 0; i < triggers.Count; i++)
 		{
 			if(triggers[i].Fired)
@@ -62,7 +62,8 @@ public class Door : TimedObject
 				TimeDisturbance();
 				if(isOpen)
 				{
-					collider.enabled = false;
+					//collider.enabled = false;
+					TryOpen();
 				}
 			}
 		}
@@ -71,7 +72,7 @@ public class Door : TimedObject
 			TryClose();
 		}
 	}
-	
+
 	void TryClose()
 	{
 		Vector3 origin = transform.position;
@@ -82,6 +83,7 @@ public class Door : TimedObject
 			isOpen = false;
 			isClosing = false;
 			collider.enabled = true;
+			cube.renderer.enabled = true;
 		}
 	}
 	void TryOpen()
@@ -90,6 +92,7 @@ public class Door : TimedObject
 		isClosing = false;
 		IsClosed = false;
 		collider.enabled = false;
+		cube.renderer.enabled = false;
 	}
 	#endregion
 }
